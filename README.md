@@ -29,6 +29,21 @@ für die LSP-Plugins. Anmelden (`claude`) musst du einmal selbst.
 
 Voraussetzungen: Git, Node 18+, npm, Python 3, Claude Code CLI.
 
+### CachyOS (Arch) in einem Rutsch
+
+Grund-Setup, lokale Modelle (Qwen, Routing, flag-guard, FLUX.1) und Obsidian-Gedächtnis
+mit einem Skript. Es installiert die Pakete und Claude Code selbst und fragt vor dem
+Anlegen des Vaults nach:
+
+```bash
+sudo pacman -S --needed git
+git clone https://github.com/pbaetz99/claude-code-setup.git /tmp/ccs && bash /tmp/ccs/setup/cachyos.sh
+```
+
+`OHNE_LOKAL=1` oder `OHNE_OBSIDIAN=1` davorsetzen, um einen Teil wegzulassen. Rund 55 GB
+Downloads (Modelle). Danach neues Terminal, `claude` anmelden, für `claude-lokal` den
+API-Key ablegen (siehe [setup/local-models/README.md](setup/local-models/README.md)).
+
 ## Was drin ist
 
 | Ordner / Datei | Inhalt |
@@ -76,6 +91,51 @@ Sonnet 5.5 2/10, Opus 5.5 4/20, Fable 5.1 10/50.
 Wechsel in der Sitzung: `/model opus`, `/model fable`, `/effort high`. Die Regel dazu, die Claude in jeder
 Sitzung liest: `rules/ecc/common/performance.md`. `modelSettings` und `modelPicker` brauchen Claude Code
 2.1.251 oder neuer; ältere Versionen ignorieren die Schlüssel stillschweigend.
+
+## Lokale Modelle (optional)
+
+Qwen-Coder lokal über Ollama mit automatischem Routing (`claude-code-router`): Hintergrund- und
+einfache Tasks laufen lokal, Planung, Review und Security bleiben bei Claude. `/lokal <aufgabe>`
+erzwingt das lokale Modell; lehnt Anthropic eine Antwort ab, läuft die Sitzung per
+flag-guard 60 Minuten lokal weiter. Dazu FLUX.1 als lokaler Bild-MCP-Server. Abgestimmt auf
+Ryzen 9 9900X, RTX 5070 Ti (16 GB) und 64 GB DDR5.
+
+Nicht Teil von `install.sh`, sondern einmal auf dem Zielrechner (Linux/CachyOS):
+`bash setup/local-models/setup-local-models.sh`, danach `claude-lokal` starten. Achtung: Dort
+läuft auch der Claude-Pfad über die API-Abrechnung statt über das Abo; normales `claude`
+bleibt beim Abo. Details, VRAM-Bedarf und Abwägungen:
+[setup/local-models/README.md](setup/local-models/README.md).
+
+## Obsidian als Gedächtnis (optional, Linux/macOS)
+
+Ein Obsidian-Vault wird zum Langzeitgedächtnis von Claude (Plugin `claude-obsidian`):
+
+- **Laden:** Beim Sitzungsstart lädt ein Hook den Kurzstand `wiki/hot.md` automatisch.
+- **Speichern:** `/save` legt Entscheidungen, gelöste Fehler, Vorlieben und Runbooks
+  als verlinkte Notizen ab. Claude bietet das am Ende passender Aufgaben an und
+  speichert erst nach deinem Ja.
+- **Abrufen:** Claude schaut mit `wiki-query` dort nach, bevor er nachfragt.
+
+Einmal auf dem Zielrechner:
+
+```bash
+bash setup/obsidian-memory/setup-obsidian-memory.sh
+```
+
+Das Skript läuft so ab:
+
+1. Es legt den Vault unter `~/Obsidian/Claude-Memory` an (anderer Ort per
+   `OBSIDIAN_VAULT=...`) oder übernimmt einen vorhandenen. Es zeigt dir zuerst den
+   Plan und schreibt erst nach deiner Bestätigung.
+2. Es trägt `CLAUDE_OBSIDIAN_VAULT` und `CLAUDE_OBSIDIAN_SESSION_CONTEXT=1` ein, und zwar in
+   `environment.d`, fish und bash.
+3. Es legt die Regeln, wann Claude abruft und speichert, als `~/.claude/CLAUDE.md` ab
+   (Vorlage: [setup/obsidian-memory/CLAUDE.md](setup/obsidian-memory/CLAUDE.md)). Eine
+   vorhandene `CLAUDE.md` bleibt unangetastet.
+
+Zugangsdaten, Patientendaten und interne Hosts kommen laut Regel nie in den Vault. Das
+eingebaute Auto-Memory von Claude Code bleibt für kurze Arbeitsnotizen bestehen. Unter
+nativem Windows verweigert das Plugin Schreibzugriffe; dort geht es nur über WSL.
 
 ## Was bewusst nicht drin ist
 

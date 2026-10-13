@@ -1,0 +1,38 @@
+{
+  "//": "claude-code-router (ccr) Konfiguration. Kopiere diese Datei nach ~/.claude-code-router/config.json. Das Setup-Skript macht das. Doku: https://github.com/musistudio/claude-code-router",
+  "LOG": false,
+  "HOST": "127.0.0.1",
+  "PORT": 3456,
+  "API_TIMEOUT_MS": 600000,
+
+  "Providers": [
+    {
+      "name": "ollama",
+      "//": "Lokales Modell via Ollama (OpenAI-kompatibel). Modell vorher ziehen: ollama pull qwen3-coder:30b",
+      "api_base_url": "http://127.0.0.1:11434/v1/chat/completions",
+      "api_key": "ollama",
+      "models": ["qwen3-coder:30b"]
+    },
+    {
+      "name": "anthropic",
+      "//": "ACHTUNG: Dieser Pfad laeuft ueber die Anthropic-API und wird je Token abgerechnet, NICHT ueber dein Claude-Abo (OAuth). Den Key setzt der Starter claude-lokal nur fuer ccr (aus ~/.config/anthropic/api-key); nicht global exportieren. Modell-IDs Stand 13.10.2026.",
+      "//flag-guard": "Laeuft ueber flag-guard (127.0.0.1:3457): nach einer Anthropic-Ablehnung (stop_reason refusal) geht die Sitzung 60 min lokal. Ohne flag-guard hier https://api.anthropic.com/v1/messages eintragen.",
+      "api_base_url": "http://127.0.0.1:3457/v1/messages",
+      "api_key": "$ANTHROPIC_API_KEY",
+      "models": ["claude-sonnet-5-5", "claude-opus-5-5", "claude-haiku-5-5"],
+      "transformer": { "use": ["Anthropic"] }
+    }
+  ],
+
+  "Router": {
+    "//": "default = normale Arbeit bleibt bei Claude. background/einfache Hintergrund-Tasks -> lokal. longContext/think/webSearch bleiben bei Claude (Qualitaet, Sicherheit).",
+    "default": "anthropic,claude-sonnet-5-5",
+    "background": "ollama,qwen3-coder:30b",
+    "think": "anthropic,claude-opus-5-5",
+    "longContext": "anthropic,claude-sonnet-5-5",
+    "longContextThreshold": 60000,
+    "webSearch": "anthropic,claude-sonnet-5-5"
+  },
+
+  "CUSTOM_ROUTER_PATH": "$HOME/.claude-code-router/custom-router.js"
+}

@@ -1,0 +1,17 @@
+# Abhaengigkeiten fuer flux-image-server.py (lokaler Bild-MCP-Server).
+# Installation ins venv uebernimmt setup-local-models.sh.
+#
+# WICHTIG: RTX 50xx (Blackwell, sm_120) braucht torch >= 2.7 mit CUDA-12.8-Wheels.
+# Das Setup-Skript installiert torch vorher aus https://download.pytorch.org/whl/cu128;
+# aeltere Wheels (cu124 o. ae.) laufen auf Blackwell nicht.
+
+mcp>=1.2.0
+diffusers>=0.32.0
+transformers>=4.46.0
+accelerate>=1.2.0
+bitsandbytes>=0.45.3
+safetensors>=0.4.0
+pillow>=10.0.0
+# Kein sentencepiece/protobuf: FLUX bringt tokenizer.json mit (T5TokenizerFast), und auf
+# dem neuesten CPython von CachyOS fehlen dafuer oft Wheels (Quellbau bricht ab).
+torch>=2.7.0
