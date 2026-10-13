@@ -1,6 +1,6 @@
 {
   "_hinweis": "Erzeugt von setup/export-plugins.py. Nicht von Hand pflegen, sondern neu erzeugen.",
-  "erzeugt_am": "2026-10-12",
+  "erzeugt_am": "2026-10-13",
   "marketplaces": {
     "agricidaniel-claude-obsidian": {
       "source": "github",
@@ -46,7 +46,7 @@
     },
     {
       "id": "code-review@claude-plugins-official",
-      "version": "unknown",
+      "version": "f359d43b4060",
       "enabled": true
     },
     {
@@ -56,12 +56,12 @@
     },
     {
       "id": "context7@claude-plugins-official",
-      "version": "unknown",
+      "version": "f359d43b4060",
       "enabled": true
     },
     {
       "id": "feature-dev@claude-plugins-official",
-      "version": "unknown",
+      "version": "f359d43b4060",
       "enabled": true
     },
     {
@@ -81,13 +81,13 @@
     },
     {
       "id": "playwright@claude-plugins-official",
-      "version": "unknown",
+      "version": "f359d43b4060",
       "enabled": true
     },
     {
       "id": "ponytail@ponytail",
-      "version": "4.10.0",
-      "enabled": false
+      "version": "5.2.0",
+      "enabled": true
     },
     {
       "id": "pyright-lsp@claude-plugins-official",
@@ -111,7 +111,7 @@
     },
     {
       "id": "ui-ux-pro-max@ui-ux-pro-max-skill",
-      "version": "2.13.0",
+      "version": "2.15.0",
       "enabled": true
     }
   ],
