@@ -52,10 +52,19 @@ case "$MODUS" in
     log "Update verfügbar (${lokal:0:7} -> ${fern:0:7}). Modus fetch: prüfen und selbst mergen: git -C ~/.claude pull --ff-only"
     ;;
   verify)
-    if git -C "$ZIEL" merge --ff-only --verify-signatures -q '@{u}' 2>>"$LOG"; then
-      log "Signierter Commit angewandt: ${lokal:0:7} -> ${fern:0:7}"
+    # Signer muss gepinnt sein, sonst zählt jede gültige Fremdsignatur. Ohne hinterlegten
+    # erlaubten Schlüssel wird NICHTS angewandt.
+    signers=$(git -C "$ZIEL" config --get gpg.ssh.allowedSignersFile 2>/dev/null || echo "")
+    if [ -z "$signers" ] || [ ! -s "$signers" ]; then
+      log "Modus verify: kein erlaubter Signer gepinnt (gpg.ssh.allowedSignersFile), NICHT angewandt."
     else
-      log "Commit nicht (gültig) signiert, Modus verify: NICHT angewandt. Selbst prüfen und mergen."
+      alle_ok=1
+      for c in $(git -C "$ZIEL" rev-list "$lokal..$fern" 2>/dev/null); do
+        git -C "$ZIEL" verify-commit "$c" >/dev/null 2>&1 || { alle_ok=0; log "Commit $c ohne gültige Signatur des erlaubten Signers, abgebrochen."; break; }
+      done
+      if [ "$alle_ok" = "1" ] && git -C "$ZIEL" merge --ff-only -q '@{u}' 2>>"$LOG"; then
+        log "Alle Commits signiert und angewandt: ${lokal:0:7} -> ${fern:0:7}"
+      fi
     fi
     ;;
   *)  # apply
