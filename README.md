@@ -84,6 +84,20 @@ Umgebungswerten), `projects/` und `sessions/` (Mitschriften), `plugins/` (Cache,
 Install-Skript neu gefüllt), Logs, `backups/`, `ecc/` (Laufzeitstand). Die `.gitignore` ist eine
 Allowlist, `git add -A` kann davon nichts erfassen.
 
+## Automatische Updates
+
+| Was | Wie | Abschalten |
+| --- | --- | --- |
+| Claude Code selbst | eigener Schalter `autoUpdates` in `~/.claude.json`, bei dir an | `claude config` bzw. `DISABLE_AUTOUPDATER=1` |
+| Marktplätze und Plugins | `autoUpdate: true` je Marktplatz in `settings.json`; Claude Code prüft beim Start im Hintergrund | Eintrag auf `false` |
+| Diese Konfiguration | `setup/self-update.sh` als asynchroner SessionStart-Hook: `git pull --ff-only`, höchstens einmal je 24 Stunden, blockiert nie | `CLAUDE_SETUP_AUTO_UPDATE=0` |
+
+`self-update.sh` fasst nichts an, wenn lokale Änderungen vorliegen, `origin` ein fremdes Repo ist oder kein
+Fast-Forward möglich ist. Es schreibt dann nur eine Zeile in `~/.claude/self-update.log` (gitignored).
+Das Intervall stellst du mit `CLAUDE_SETUP_UPDATE_INTERVAL` (Sekunden) ein.
+
+ECC selbst liegt als Dateien im Repo. Neue ECC-Versionen kommen also über dieses Repo, nicht über den Marktplatz.
+
 ## Pflege
 
 Nach einer Plugin-Änderung:

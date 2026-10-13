@@ -1,7 +1,38 @@
 {
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
+  },
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": []
+  },
+  "model": "opusplan",
+  "fallbackModel": [
+    "sonnet"
+  ],
+  "modelPicker": {
+    "options": [
+      {
+        "model": "opusplan",
+        "label": "Standard: Opus plant, Sonnet baut",
+        "description": "Plan-Modus auf Opus 5.5, Umsetzung auf Sonnet 5.5. Beste Kosten je erledigter Aufgabe."
+      },
+      {
+        "model": "opus",
+        "label": "Opus 5.5",
+        "description": "Komplexe Aenderungen und unklare Anforderungen ohne Sicherheitsbezug. 4/20 USD je MTok."
+      },
+      {
+        "model": "sonnet",
+        "label": "Sonnet 5.5",
+        "description": "Klar umrissene Alltagsarbeit, Refactorings, Tests. 2/10 USD je MTok."
+      },
+      {
+        "model": "fable",
+        "label": "Fable 5.1: harte Arbeit und Security",
+        "description": "Security-Arbeit, Root-Cause-Analysen, Architekturentscheidungen, lange autonome Laeufe. 10/50 USD je MTok."
+      }
+    ]
   },
   "hooks": {
     "PreToolUse": [
@@ -120,6 +151,17 @@
           {
             "type": "command",
             "command": "node -e \"const p=require('path');const r=(function(){var p=require('path'),f=require('fs'),o=require('os');var e=Buffer.from('','base64').toString('utf8');if(e&&e.trim())return e.trim();var d=p.join(o.homedir(),'.claude');function L(x){try{return require(p.join(x,'scripts','lib','resolve-ecc-root')).resolveEccRoot()}catch(_){return null}}var r=L(d);if(r)return r;var s=['ecc','ecc@ecc','marketplaces/ecc','everything-claude-code','everything-claude-code@everything-claude-code','marketplaces/everything-claude-code'];for(var i=0;i<s.length;i++){r=L(p.join(d,'plugins',s[i]));if(r)return r}try{var g=['ecc','everything-claude-code'];for(var j=0;j<g.length;j++){var c=p.join(d,'plugins','cache',g[j]);var O=f.readdirSync(c);for(var k=0;k<O.length;k++){var q=p.join(c,O[k]);var V=f.readdirSync(q);for(var m=0;m<V.length;m++){r=L(p.join(q,V[m]));if(r)return r}}}}catch(_){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)\" node scripts/hooks/run-with-flags.js session-start:plan-canvas-sessions scripts/hooks/plan-canvas-sessions.js standard,strict"
+          }
+        ]
+      },
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.claude/setup/self-update.sh\"",
+            "async": true,
+            "timeout": 60
           }
         ]
       }
@@ -280,34 +322,31 @@
       "source": {
         "source": "github",
         "repo": "DietrichGebert/ponytail"
-      }
+      },
+      "autoUpdate": true
     },
     "ui-ux-pro-max-skill": {
       "source": {
         "source": "git",
         "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git"
-      }
+      },
+      "autoUpdate": true
     },
     "humanizer": {
       "source": {
         "source": "git",
         "url": "https://github.com/blader/humanizer.git"
-      }
+      },
+      "autoUpdate": true
     },
     "agricidaniel-claude-obsidian": {
       "source": {
         "source": "github",
         "repo": "AgriciDaniel/claude-obsidian"
-      }
+      },
+      "autoUpdate": true
     }
   },
-  "skipWorkflowUsageWarning": true,
-  "theme": "auto",
-  "agentPushNotifEnabled": true,
-  "model": "opusplan",
-  "fallbackModel": [
-    "sonnet"
-  ],
   "effortLevel": "medium",
   "modelSettings": {
     "claude-fable-5-1": {
@@ -327,31 +366,8 @@
       "autoCompactWindow": 150000
     }
   },
-  "modelPicker": {
-    "options": [
-      {
-        "model": "opusplan",
-        "label": "Standard: Opus plant, Sonnet baut",
-        "description": "Plan-Modus auf Opus 5.5, Umsetzung auf Sonnet 5.5. Beste Kosten je erledigter Aufgabe."
-      },
-      {
-        "model": "opus",
-        "label": "Opus 5.5",
-        "description": "Komplexe Aenderungen und unklare Anforderungen ohne Sicherheitsbezug. 4/20 USD je MTok."
-      },
-      {
-        "model": "sonnet",
-        "label": "Sonnet 5.5",
-        "description": "Klar umrissene Alltagsarbeit, Refactorings, Tests. 2/10 USD je MTok."
-      },
-      {
-        "model": "fable",
-        "label": "Fable 5.1: harte Arbeit und Security",
-        "description": "Security-Arbeit, Root-Cause-Analysen, Architekturentscheidungen, lange autonome Laeufe. 10/50 USD je MTok."
-      }
-    ]
-  },
-  "env": {
-    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
-  }
+  "skipWorkflowUsageWarning": true,
+  "theme": "auto",
+  "agentPushNotifEnabled": true,
+  "switchModelsOnFlag": true
 }
