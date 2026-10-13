@@ -102,7 +102,9 @@ Das Repo enthält ausführbare Hooks, automatisch gepullter Code läuft also mit
   Clients ausspielen.
 - `verify`: wendet nur an, wenn der Commit gültig signiert ist (`git merge --verify-signatures`).
   Dafür Commit-Signierung einrichten und den Schlüssel auf jedem Client als vertrauenswürdig
-  hinterlegen. Ein übernommener GitHub-Zugang allein reicht dann nicht.
+  hinterlegen. Ein übernommener GitHub-Zugang allein reicht dann nicht. Die Signer-Datei
+  (`gpg.ssh.allowedSignersFile`) darf nur vertrauenswürdige Schlüssel enthalten; mit
+  `CLAUDE_SETUP_SIGNER` lässt sich zusätzlich der erwartete Signer festnageln.
 - `fetch`: holt nur und schreibt „Update verfügbar“ ins Log, führt nichts aus. Du mergest selbst
   mit `git -C ~/.claude pull --ff-only`.
 

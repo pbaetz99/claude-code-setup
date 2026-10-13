@@ -15,6 +15,7 @@ LOG="$ZIEL/self-update.log"
 STAMP="$ZIEL/.last-self-update"
 INTERVALL=${CLAUDE_SETUP_UPDATE_INTERVAL:-86400}
 MODUS=${CLAUDE_SETUP_UPDATE_MODE:-apply}
+SIGNER_ERWARTET=${CLAUDE_SETUP_SIGNER:-}   # erwarteter SSH-Signer (principal) fuer verify; leer = Signer-Datei ist der Pin
 OK_HTTPS="https://github.com/pbaetz99/claude-code-setup.git"
 OK_SSH="git@github.com:pbaetz99/claude-code-setup.git"
 
@@ -67,6 +68,9 @@ case "$MODUS" in
         read -r status signer < <(git -C "$ZIEL" -c gpg.format=ssh -c gpg.minTrustLevel=fully           log -1 --format='%G? %GS' "$c" 2>/dev/null)
         if [ "$status" != "G" ] || [ -z "$signer" ]; then
           alle_ok=0; log "Commit $c nicht gültig SSH-signiert vom erlaubten Signer, abgebrochen."; break
+        fi
+        if [ -n "$SIGNER_ERWARTET" ] && [ "$signer" != "$SIGNER_ERWARTET" ]; then
+          alle_ok=0; log "Commit $c von $signer, erwartet $SIGNER_ERWARTET, abgebrochen."; break
         fi
       done
       # exakt die geprüfte SHA mergen, nicht das erneut aufgelöste @{u} (TOCTOU)
