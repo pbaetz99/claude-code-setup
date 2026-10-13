@@ -29,6 +29,21 @@ für die LSP-Plugins. Anmelden (`claude`) musst du einmal selbst.
 
 Voraussetzungen: Git, Node 18+, npm, Python 3, Claude Code CLI.
 
+### CachyOS (Arch) in einem Rutsch
+
+Grund-Setup, lokale Modelle (Qwen, Routing, flag-guard, FLUX.1) und Obsidian-Gedächtnis
+mit einem Skript. Es installiert die Pakete und Claude Code selbst und fragt vor dem
+Anlegen des Vaults nach:
+
+```bash
+sudo pacman -S --needed git
+git clone https://github.com/pbaetz99/claude-code-setup.git /tmp/ccs && bash /tmp/ccs/setup/cachyos.sh
+```
+
+`OHNE_LOKAL=1` oder `OHNE_OBSIDIAN=1` davorsetzen, um einen Teil wegzulassen. Rund 55 GB
+Downloads (Modelle). Danach neues Terminal, `claude` anmelden, für `claude-lokal` den
+API-Key ablegen (siehe [setup/local-models/README.md](setup/local-models/README.md)).
+
 ## Was drin ist
 
 | Ordner / Datei | Inhalt |
