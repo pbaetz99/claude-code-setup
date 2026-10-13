@@ -1,0 +1,41 @@
+{
+  "//": "claude-code-router (ccr) Konfiguration. Kopiere diese Datei nach ~/.claude-code-router/config.json. Das Setup-Skript macht das. Doku: https://github.com/musistudio/claude-code-router",
+  "LOG": false,
+  "HOST": "127.0.0.1",
+  "PORT": 3456,
+  "API_TIMEOUT_MS": 600000,
+
+  "Providers": [
+    {
+      "name": "ollama",
+      "//": "Lokales Modell via Ollama (OpenAI-kompatibel). Modell vorher ziehen: ollama pull qwen3-coder:30b",
+      "api_base_url": "http://127.0.0.1:11434/v1/chat/completions",
+      "api_key": "ollama",
+      "models": ["qwen3-coder:30b"]
+    },
+    {
+      "name": "anthropic",
+      "//": "ACHTUNG: Dieser Pfad laeuft ueber die Anthropic-API und wird je Token abgerechnet, NICHT ueber dein Claude-Abo (OAuth). Setze ANTHROPIC_API_KEY in der Umgebung. Pruefe die Modell-IDs gegen die aktuelle Anthropic-Doku und trage sie unten ein.",
+      "api_base_url": "https://api.anthropic.com/v1/messages",
+      "api_key": "$ANTHROPIC_API_KEY",
+      "models": [
+        "MODEL-ID-SONNET-HIER-EINTRAGEN",
+        "MODEL-ID-OPUS-HIER-EINTRAGEN",
+        "MODEL-ID-HAIKU-HIER-EINTRAGEN"
+      ],
+      "transformer": { "use": ["Anthropic"] }
+    }
+  ],
+
+  "Router": {
+    "//": "default = normale Arbeit bleibt bei Claude. background/einfache Hintergrund-Tasks -> lokal. longContext/think/webSearch bleiben bei Claude (Qualitaet, Sicherheit).",
+    "default": "anthropic,MODEL-ID-SONNET-HIER-EINTRAGEN",
+    "background": "ollama,qwen3-coder:30b",
+    "think": "anthropic,MODEL-ID-OPUS-HIER-EINTRAGEN",
+    "longContext": "anthropic,MODEL-ID-SONNET-HIER-EINTRAGEN",
+    "longContextThreshold": 60000,
+    "webSearch": "anthropic,MODEL-ID-SONNET-HIER-EINTRAGEN"
+  },
+
+  "CUSTOM_ROUTER_PATH": "$HOME/.claude-code-router/custom-router.js"
+}
