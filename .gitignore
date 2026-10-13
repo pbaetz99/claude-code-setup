@@ -1,0 +1,58 @@
+# ~/.claude ist dieses Git-Repo. Allowlist-Prinzip: alles ist ignoriert, nur die
+# ausdrücklich freigegebene Konfiguration wird versioniert.
+#
+# Warum so streng: In diesem Ordner liegen Zugangsdaten (.credentials.json),
+# Sitzungsmitschriften (projects/, sessions/), Plugin-Caches, Logs und Laufzeitstand.
+# Ein versehentliches `git add -A` darf davon nichts erfassen. Wer etwas Neues
+# versionieren will, trägt es hier unten ein.
+*
+!.gitignore
+!.gitattributes
+!README.md
+!AGENTS.md
+!PLUGIN_SCHEMA_NOTES.md
+!the-security-guide.md
+!marketplace.json
+!plugin.json
+!settings.json
+!LICENSE
+!CONTRIBUTING.md
+!keybindings.json
+
+# GitHub-Vorlagen
+!.github/
+!.github/**
+
+# Verzeichnisse: erst den Ordner, dann den Inhalt freigeben
+!setup/
+!setup/**
+!agents/
+!agents/**
+!commands/
+!commands/**
+!skills/
+!skills/**
+!rules/
+!rules/**
+!hooks/
+!hooks/**
+!scripts/
+!scripts/**
+!mcp-configs/
+!mcp-configs/**
+
+# Niemals, auch nicht innerhalb freigegebener Ordner
+.credentials.json
+*.log
+*.bak
+*.db
+*.sqlite
+node_modules/
+__pycache__/
+*.pyc
+.env
+.env.*
+voice-fingerprint.json
+# Berichte aus dem Staging-Lauf: nur lokal, niemals versionieren
+FORK_REPORT.md
+SANITIZATION_REPORT.md
