@@ -91,6 +91,37 @@ läuft auch der Claude-Pfad über die API-Abrechnung statt über das Abo; normal
 bleibt beim Abo. Details, VRAM-Bedarf und Abwägungen:
 [setup/local-models/README.md](setup/local-models/README.md).
 
+## Obsidian als Gedächtnis (optional, Linux/macOS)
+
+Ein Obsidian-Vault wird zum Langzeitgedächtnis von Claude (Plugin `claude-obsidian`):
+
+- **Laden:** Beim Sitzungsstart lädt ein Hook den Kurzstand `wiki/hot.md` automatisch.
+- **Speichern:** `/save` legt Entscheidungen, gelöste Fehler, Vorlieben und Runbooks
+  als verlinkte Notizen ab. Claude bietet das am Ende passender Aufgaben an und
+  speichert erst nach deinem Ja.
+- **Abrufen:** Claude schaut mit `wiki-query` dort nach, bevor er nachfragt.
+
+Einmal auf dem Zielrechner:
+
+```bash
+bash setup/obsidian-memory/setup-obsidian-memory.sh
+```
+
+Das Skript läuft so ab:
+
+1. Es legt den Vault unter `~/Obsidian/Claude-Memory` an (anderer Ort per
+   `OBSIDIAN_VAULT=...`) oder übernimmt einen vorhandenen. Es zeigt dir zuerst den
+   Plan und schreibt erst nach deiner Bestätigung.
+2. Es trägt `CLAUDE_OBSIDIAN_VAULT` und `CLAUDE_OBSIDIAN_SESSION_CONTEXT=1` ein, und zwar in
+   `environment.d`, fish und bash.
+3. Es legt die Regeln, wann Claude abruft und speichert, als `~/.claude/CLAUDE.md` ab
+   (Vorlage: [setup/obsidian-memory/CLAUDE.md](setup/obsidian-memory/CLAUDE.md)). Eine
+   vorhandene `CLAUDE.md` bleibt unangetastet.
+
+Zugangsdaten, Patientendaten und interne Hosts kommen laut Regel nie in den Vault. Das
+eingebaute Auto-Memory von Claude Code bleibt für kurze Arbeitsnotizen bestehen. Unter
+nativem Windows verweigert das Plugin Schreibzugriffe; dort geht es nur über WSL.
+
 ## Was bewusst nicht drin ist
 
 `.credentials.json`, `~/.claude.json` (OAuth, Projektstand, ein lokaler MCP-Server mit
