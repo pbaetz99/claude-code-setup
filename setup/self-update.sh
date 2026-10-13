@@ -57,18 +57,25 @@ case "$MODUS" in
     signers=$(git -C "$ZIEL" config --get gpg.ssh.allowedSignersFile 2>/dev/null || echo "")
     if [ -z "$signers" ] || [ ! -s "$signers" ]; then
       log "Modus verify: kein erlaubter Signer gepinnt (gpg.ssh.allowedSignersFile), NICHT angewandt."
+    elif ! printf '%s' "$fern" | grep -Eq '^[0-9a-f]{40}$'; then
+      log "Modus verify: Ziel-SHA unerwartet ($fern), NICHT angewandt."
     else
       alle_ok=1
       for c in $(git -C "$ZIEL" rev-list "$lokal..$fern" 2>/dev/null); do
-        git -C "$ZIEL" verify-commit "$c" >/dev/null 2>&1 || { alle_ok=0; log "Commit $c ohne gültige Signatur des erlaubten Signers, abgebrochen."; break; }
+        # gültige, voll vertraute Signatur des gepinnten Signers UND SSH-Format verlangen
+        status=$(git -C "$ZIEL" -c gpg.minTrustLevel=fully log -1 --format='%G?' "$c" 2>/dev/null)
+        if [ "$status" != "G" ] || ! git -C "$ZIEL" cat-file commit "$c" 2>/dev/null | grep -q 'BEGIN SSH SIGNATURE'; then
+          alle_ok=0; log "Commit $c nicht gültig SSH-signiert vom erlaubten Signer, abgebrochen."; break
+        fi
       done
-      if [ "$alle_ok" = "1" ] && git -C "$ZIEL" merge --ff-only -q '@{u}' 2>>"$LOG"; then
-        log "Alle Commits signiert und angewandt: ${lokal:0:7} -> ${fern:0:7}"
+      # exakt die geprüfte SHA mergen, nicht das erneut aufgelöste @{u} (TOCTOU)
+      if [ "$alle_ok" = "1" ] && git -C "$ZIEL" merge --ff-only -q "$fern" 2>>"$LOG"; then
+        log "Alle Commits SSH-signiert und angewandt: ${lokal:0:7} -> ${fern:0:7}"
       fi
     fi
     ;;
   *)  # apply
-    if git -C "$ZIEL" merge --ff-only -q '@{u}' 2>>"$LOG"; then
+    if git -C "$ZIEL" merge --ff-only -q "$fern" 2>>"$LOG"; then
       log "Konfiguration aktualisiert: ${lokal:0:7} -> ${fern:0:7}"
     else
       log "Kein Fast-Forward möglich, Stand bleibt"
