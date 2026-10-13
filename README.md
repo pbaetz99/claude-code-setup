@@ -81,11 +81,14 @@ Sitzung liest: `rules/ecc/common/performance.md`. `modelSettings` und `modelPick
 
 Qwen-Coder lokal über Ollama mit automatischem Routing (`claude-code-router`): Hintergrund- und
 einfache Tasks laufen lokal, Planung, Review und Security bleiben bei Claude. `/lokal <aufgabe>`
-erzwingt das lokale Modell. Dazu FLUX.1 als lokaler Bild-MCP-Server.
+erzwingt das lokale Modell; lehnt Anthropic eine Antwort ab, läuft die Sitzung per
+flag-guard 60 Minuten lokal weiter. Dazu FLUX.1 als lokaler Bild-MCP-Server. Abgestimmt auf
+Ryzen 9 9900X, RTX 5070 Ti (16 GB) und 64 GB DDR5.
 
 Nicht Teil von `install.sh`, sondern einmal auf dem Zielrechner (Linux/CachyOS):
-`bash setup/local-models/setup-local-models.sh`. Achtung: Unter `ccr code` läuft auch der
-Claude-Pfad über die API-Abrechnung statt über das Abo. Details, VRAM-Bedarf und Abwägungen:
+`bash setup/local-models/setup-local-models.sh`, danach `claude-lokal` starten. Achtung: Dort
+läuft auch der Claude-Pfad über die API-Abrechnung statt über das Abo; normales `claude`
+bleibt beim Abo. Details, VRAM-Bedarf und Abwägungen:
 [setup/local-models/README.md](setup/local-models/README.md).
 
 ## Was bewusst nicht drin ist

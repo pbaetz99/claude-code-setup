@@ -53,6 +53,9 @@ __pycache__/
 .env
 .env.*
 voice-fingerprint.json
+# Vom Setup lokaler Modelle verteilt (Quelle: setup/local-models/), sonst blockiert
+# die Kopie als "lokale Aenderung" setup/self-update.sh
+commands/lokal.md
 # Berichte aus dem Staging-Lauf: nur lokal, niemals versionieren
 FORK_REPORT.md
 SANITIZATION_REPORT.md
