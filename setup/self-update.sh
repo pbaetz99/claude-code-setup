@@ -62,9 +62,10 @@ case "$MODUS" in
     else
       alle_ok=1
       for c in $(git -C "$ZIEL" rev-list "$lokal..$fern" 2>/dev/null); do
-        # gültige, voll vertraute Signatur des gepinnten Signers UND SSH-Format verlangen
-        status=$(git -C "$ZIEL" -c gpg.minTrustLevel=fully log -1 --format='%G?' "$c" 2>/dev/null)
-        if [ "$status" != "G" ] || ! git -C "$ZIEL" cat-file commit "$c" 2>/dev/null | grep -q 'BEGIN SSH SIGNATURE'; then
+        # gpg.format=ssh erzwingen: dann kann %G?=G nur über die gepinnte SSH-Signer-Datei
+        # entstehen, kein GPG-/X.509-Vertrauenspfad. Signer (%GS) muss zudem gesetzt sein.
+        read -r status signer < <(git -C "$ZIEL" -c gpg.format=ssh -c gpg.minTrustLevel=fully           log -1 --format='%G? %GS' "$c" 2>/dev/null)
+        if [ "$status" != "G" ] || [ -z "$signer" ]; then
           alle_ok=0; log "Commit $c nicht gültig SSH-signiert vom erlaubten Signer, abgebrochen."; break
         fi
       done
