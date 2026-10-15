@@ -24,6 +24,9 @@ QWEN_MODEL="${QWEN_MODEL:-qwen3-coder:30b}"
 DEFAULT_QWEN="qwen3-coder:30b"
 TORCH_INDEX_URL="${TORCH_INDEX_URL:-https://download.pytorch.org/whl/cu128}"
 OLLAMA_WAIT_SECONDS=30
+# Gepinnt: ccr 3.x kennt kein 'ccr code'/config.json mehr und schreibt beim ersten Start
+# ANTHROPIC_BASE_URL + apiKeyHelper in die globale ~/.claude/settings.json.
+CCR_PKG="@musistudio/claude-code-router@1.0.73"
 
 say()  { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m[!]\033[0m %s\n' "$*"; }
@@ -64,10 +67,10 @@ fi
 say "claude-code-router installieren/aktualisieren"
 NPM_PREFIX="$(npm config get prefix)"
 if [ -w "$NPM_PREFIX/lib" ] || [ -w "$NPM_PREFIX" ]; then
-  npm install -g @musistudio/claude-code-router
+  npm install -g "$CCR_PKG"
 else
   # Arch: globaler Prefix /usr gehoert root -> ohne sudo ins Nutzerverzeichnis.
-  npm install -g --prefix "$HOME/.local" @musistudio/claude-code-router
+  npm install -g --prefix "$HOME/.local" "$CCR_PKG"
 fi
 case ":$PATH:" in *":$BIN_DIR:"*) ;; *) warn "$BIN_DIR in den PATH aufnehmen (ccr, claude-lokal)." ;; esac
 
@@ -127,7 +130,10 @@ fi
 # RAM. Als MoE mit 3B aktiven Parametern bleibt das schnell. q8_0-KV-Cache und Flash
 # Attention halbieren den Kontext-Speicher, damit 64k Kontext (Claude-Code-Systemprompt
 # ist gross) noch auf die GPU passt. Ein Modell, ein Request gleichzeitig = kein VRAM-Streit.
-if have systemctl && systemctl cat ollama.service >/dev/null 2>&1; then
+if have systemctl && systemctl cat ollama.service >/dev/null 2>&1 && ! sudo -v; then
+  # Ohne sudo (z. B. Domaenenkonto) nicht unter set -e abbrechen, sondern Rest weiterlaufen lassen.
+  warn "Kein sudo - Ollama-Tuning uebersprungen. Override-Datei unten als Admin anlegen, dann: systemctl enable --now ollama"
+elif have systemctl && systemctl cat ollama.service >/dev/null 2>&1; then
   say "Ollama-Tuning nach /etc/systemd/system/ollama.service.d/override.conf (sudo)"
   sudo mkdir -p /etc/systemd/system/ollama.service.d
   sudo tee /etc/systemd/system/ollama.service.d/override.conf >/dev/null <<'EOF'

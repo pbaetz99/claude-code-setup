@@ -9,7 +9,7 @@ Laeuft als eigenstaendiger Prozess; registriert via:
     claude mcp add --scope user flux -- <venv>/bin/python <pfad>/flux-image-server.py
 
 Umgebung:
-    FLUX_MODEL       Standard: black-forest-labs/FLUX.1-schnell (Apache-2.0, kein Gating, schnell).
+    FLUX_MODEL       Standard: black-forest-labs/FLUX.1-schnell (Apache-2.0, schnell; HF-Login + Lizenz akzeptieren noetig).
                      Alternative: black-forest-labs/FLUX.1-dev (bessere Qualitaet, HF-Login noetig).
     FLUX_OUTPUT_DIR  Zielordner fuer PNGs. Standard: ~/flux-output
     FLUX_DEVICE      cuda | cpu. Standard: Autoerkennung.

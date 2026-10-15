@@ -76,6 +76,13 @@ Ohne flag-guard: in `config.json` `api_base_url` des Providers `anthropic` auf
 - `node`/`npm`, `python3`, `git`, [Ollama](https://ollama.com). Auf CachyOS/Arch
   installiert das Skript die Pakete selbst.
 - Plattenplatz: ~19 GB (Qwen) + ~35 GB (Flux im Hugging-Face-Cache) + ~6 GB (venv).
+- Hugging-Face-Konto: FLUX.1-schnell ist gated. Auf
+  https://huggingface.co/black-forest-labs/FLUX.1-schnell die Lizenz akzeptieren und
+  `hf auth login` ausführen (Token mit Leserecht; gilt für jede hf-Installation). Ohne
+  Login bricht das Vorabladen mit 401 ab; nachholen mit
+  `~/.local/share/claude-flux/venv/bin/hf auth login` und Skript erneut starten.
+- ccr ist auf 1.0.73 gepinnt: 3.x übernimmt beim ersten Start die globale
+  `~/.claude/settings.json` (Base-URL auf ccr) und passt nicht zu dieser Konfiguration.
 
 ### Zielhardware: Ryzen 9 9900X + RTX 5070 Ti (16 GB) + 64 GB DDR5
 
@@ -96,7 +103,7 @@ bf16-Qualität und mehr Tempo.
 | Zweck | Modell | Speicher auf 16 GB |
 | --- | --- | --- |
 | Coding (Standard) | `qwen3-coder:30b` (MoE, 3B aktiv → schnell) | 16 GB VRAM voll + ~8 GB RAM (Q4 + q8-KV bei 64k) |
-| Bilder (Standard) | `FLUX.1-schnell` (4 Schritte, Apache-2.0, kein Gating) | ~10–13 GB VRAM Spitze, Gewichte sonst im RAM |
+| Bilder (Standard) | `FLUX.1-schnell` (4 Schritte, Apache-2.0, HF-Login + Lizenz nötig) | ~10–13 GB VRAM Spitze, Gewichte sonst im RAM |
 | Bilder (Qualität) | `FLUX.1-dev` (HF-Login nötig; Schritte 28 und Guidance 3.5 automatisch) | gleich, aber ~7× langsamer |
 
 > „Qwen 3.8 27B Uncensored" ist kein offizieller Name. Standard hier ist das

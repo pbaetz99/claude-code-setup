@@ -5,7 +5,8 @@
 # Das Setup-Skript installiert torch vorher aus https://download.pytorch.org/whl/cu128;
 # aeltere Wheels (cu124 o. ae.) laufen auf Blackwell nicht.
 
-mcp>=1.2.0
+# mcp 2.x hat FastMCP umbenannt (MCPServer) - der Server importiert mcp.server.fastmcp.
+mcp>=1.2.0,<2
 diffusers>=0.32.0
 transformers>=4.46.0
 accelerate>=1.2.0
