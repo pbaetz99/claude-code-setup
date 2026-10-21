@@ -71,6 +71,9 @@ foreach ($p in $Manifest.plugins_user) {
         Write-Host "     deaktiviert, wie auf dem Quellrechner"
     }
 }
+# Die claude-plugin-Befehle schreiben settings.json neu und streichen dabei "autoUpdate" der
+# Marktplaetze. Repo-Stand zuruecksetzen; self-update.sh braucht ausserdem einen sauberen Checkout.
+git -C $Ziel checkout -- settings.json
 
 Write-Host "== Sprachserver fuer die LSP-Plugins (npm global)"
 & npm install -g @($Manifest.npm_global) *> $null

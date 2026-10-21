@@ -49,6 +49,9 @@ feld 'for p in d["plugins_user"]: print(p["id"], 1 if p["enabled"] else 0)' | wh
   if claude plugin install -y "$pid" >/dev/null 2>&1; then echo "   + $pid"; else echo "   (fehlgeschlagen) $pid"; fi
   if [ "$en" = "0" ]; then claude plugin disable "$pid" >/dev/null 2>&1 && echo "     deaktiviert, wie auf dem Quellrechner"; fi
 done
+# Die claude-plugin-Befehle schreiben settings.json neu und streichen dabei "autoUpdate" der
+# Marktplaetze. Repo-Stand zuruecksetzen; self-update.sh braucht ausserdem einen sauberen Checkout.
+git -C "$ZIEL" checkout -- settings.json
 
 echo "== Sprachserver für die LSP-Plugins (npm global)"
 # shellcheck disable=SC2046

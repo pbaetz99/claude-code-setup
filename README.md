@@ -64,8 +64,8 @@ beim Stop), semgrep (Guardian, läuft nativ auf Windows), code-review.
 ui-ux-pro-max, playwright, feature-dev, context7 (aktuelle Bibliotheksdoku).
 **Admin / Microsoft:** microsoft-docs.
 **Arbeitsweise:** claude-code-setup, claude-md-management, claude-obsidian (Wissens-Vault;
-Schreiben braucht unter Windows WSL).
-**Deaktiviert, aber installiert:** code-simplifier, ponytail.
+Schreiben braucht unter Windows WSL), ponytail (kleinste Lösung, die reicht; Auto-Update).
+**Deaktiviert, aber installiert:** code-simplifier.
 
 Am claude.ai-Konto hängen zusätzlich: humanizer, figma, design, engineering,
 product-management, data. Die kommen mit dem Login, nicht mit diesem Repo.
