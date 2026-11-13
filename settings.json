@@ -289,11 +289,11 @@
     ]
   },
   "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": false,
     "claude-code-setup@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": false,
     "ponytail@ponytail": true,
-    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": false,
     "claude-obsidian@agricidaniel-claude-obsidian": true,
     "security-guidance@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
@@ -306,7 +306,13 @@
     "microsoft-docs@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
     "modern-web-guidance@claude-plugins-official": true,
-    "context7@claude-plugins-official": true
+    "context7@claude-plugins-official": true,
+    "figma@synced": false,
+    "data@synced": false,
+    "product-management@synced": false,
+    "design@synced": false,
+    "engineering@synced": false,
+    "humanizer@synced": false
   },
   "extraKnownMarketplaces": {
     "ponytail": {

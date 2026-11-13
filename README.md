@@ -60,15 +60,18 @@ git clone https://github.com/pbaetz99/claude-code-setup.git /tmp/ccs && bash /tm
 
 **Security:** claude-security (Tiefenscan), security-guidance (Warnungen bei Edits, Diff-Review
 beim Stop), semgrep (Guardian, läuft nativ auf Windows), code-review.
-**Web-Entwicklung:** typescript-lsp, pyright-lsp, modern-web-guidance, frontend-design,
-ui-ux-pro-max, playwright, feature-dev, context7 (aktuelle Bibliotheksdoku).
+**Web-Entwicklung:** typescript-lsp, pyright-lsp, modern-web-guidance, playwright,
+feature-dev, context7 (aktuelle Bibliotheksdoku).
 **Admin / Microsoft:** microsoft-docs.
 **Arbeitsweise:** claude-code-setup, claude-md-management, claude-obsidian (Wissens-Vault;
 Schreiben braucht unter Windows WSL), ponytail (kleinste Lösung, die reicht).
-**Deaktiviert, aber installiert:** code-simplifier.
+**Deaktiviert, aber installiert:** code-simplifier, frontend-design, ui-ux-pro-max. Die beiden Design-Plugins
+doppeln die ECC-Skills zu Frontend und Design.
 
 Am claude.ai-Konto hängen zusätzlich: humanizer, figma, design, engineering,
 product-management, data. Die kommen mit dem Login, nicht mit diesem Repo.
+`settings.json` schaltet sie über `enabledPlugins` (`<name>@synced`) ab, weil die ECC-Skills reichen und ihre
+53 Skills sonst das Skill-Listing füllen. Wieder einschalten: den Eintrag auf `true` setzen.
 
 Noch nicht installiert, bei Bedarf eine Zeile `claude plugin install <name>@claude-plugins-official`:
 `azure` (Azure MCP, braucht `az login`), `terraform`, `crowdsec`, `serena` (semantische
