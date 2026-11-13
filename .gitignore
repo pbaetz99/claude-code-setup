@@ -59,3 +59,7 @@ commands/lokal.md
 # Berichte aus dem Staging-Lauf: nur lokal, niemals versionieren
 FORK_REPORT.md
 SANITIZATION_REPORT.md
+# Von der Desktop-App bzw. von Skills zur Laufzeit angelegt: nie versionieren, sonst gilt der
+# Checkout dauerhaft als geaendert und setup/self-update.sh setzt aus
+skills/synced/
+skills/learned/

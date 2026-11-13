@@ -1,6 +1,10 @@
 {
   "env": {
-    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
+    "GATEGUARD_BASH_ROUTINE_DISABLED": "1",
+    "ECC_SKIP_OBSERVE": "1",
+    "ECC_SKIP_LLM_SUMMARY": "1",
+    "CLAUDE_SETUP_UPDATE_MODE": "fetch"
   },
   "includeCoAuthoredBy": false,
   "permissions": {
@@ -8,29 +12,36 @@
   },
   "model": "opusplan",
   "fallbackModel": [
-    "sonnet"
+    "sonnet",
+    "opus"
   ],
   "modelPicker": {
+    "replaceBuiltInOptions": true,
     "options": [
       {
         "model": "opusplan",
         "label": "Standard: Opus plant, Sonnet baut",
-        "description": "Plan-Modus auf Opus 5.5, Umsetzung auf Sonnet 5.5. Beste Kosten je erledigter Aufgabe."
+        "description": "Plan-Modus auf Opus, Umsetzung auf Sonnet. Beste Kosten je erledigter Aufgabe."
       },
       {
         "model": "opus",
-        "label": "Opus 5.5",
-        "description": "Komplexe Aenderungen und unklare Anforderungen ohne Sicherheitsbezug. 4/20 USD je MTok."
+        "label": "Opus",
+        "description": "Komplexe Aenderungen und unklare Anforderungen. 4/20 USD je MTok."
       },
       {
         "model": "sonnet",
-        "label": "Sonnet 5.5",
+        "label": "Sonnet",
         "description": "Klar umrissene Alltagsarbeit, Refactorings, Tests. 2/10 USD je MTok."
       },
       {
         "model": "fable",
-        "label": "Fable 5.1: harte Arbeit und Security",
-        "description": "Security-Arbeit, Root-Cause-Analysen, Architekturentscheidungen, lange autonome Laeufe. 10/50 USD je MTok."
+        "label": "Fable 5.2: harte Arbeit und Security",
+        "description": "Security-Arbeit, Root-Cause-Analysen, Architekturentscheidungen, lange autonome Laeufe. 8/40 USD je MTok, je nach Abo ueber Usage-Credits."
+      },
+      {
+        "model": "haiku",
+        "label": "Haiku",
+        "description": "Suchen, Lesen, mechanische Aenderungen. 0,10/0,50 USD je MTok (Prompts ueber 100k Tokens: 0,50/2,50)."
       }
     ]
   },
@@ -42,16 +53,6 @@
           {
             "type": "command",
             "command": "node -e \"const p=require('path');const r=(function(){var p=require('path'),f=require('fs'),o=require('os');var e=Buffer.from('','base64').toString('utf8');if(e&&e.trim())return e.trim();var d=p.join(o.homedir(),'.claude');function L(x){try{return require(p.join(x,'scripts','lib','resolve-ecc-root')).resolveEccRoot()}catch(_){return null}}var r=L(d);if(r)return r;var s=['ecc','ecc@ecc','marketplaces/ecc','everything-claude-code','everything-claude-code@everything-claude-code','marketplaces/everything-claude-code'];for(var i=0;i<s.length;i++){r=L(p.join(d,'plugins',s[i]));if(r)return r}try{var g=['ecc','everything-claude-code'];for(var j=0;j<g.length;j++){var c=p.join(d,'plugins','cache',g[j]);var O=f.readdirSync(c);for(var k=0;k<O.length;k++){var q=p.join(c,O[k]);var V=f.readdirSync(q);for(var m=0;m<V.length;m++){r=L(p.join(q,V[m]));if(r)return r}}}}catch(_){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)\" node scripts/hooks/pre-bash-dispatcher.js"
-          }
-        ]
-      },
-      {
-        "matcher": "PowerShell",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node -e \"const p=require('path');const r=(function(){var p=require('path'),f=require('fs'),o=require('os');var e=Buffer.from('','base64').toString('utf8');if(e&&e.trim())return e.trim();var d=p.join(o.homedir(),'.claude');function L(x){try{return require(p.join(x,'scripts','lib','resolve-ecc-root')).resolveEccRoot()}catch(_){return null}}var r=L(d);if(r)return r;var s=['ecc','ecc@ecc','marketplaces/ecc','everything-claude-code','everything-claude-code@everything-claude-code','marketplaces/everything-claude-code'];for(var i=0;i<s.length;i++){r=L(p.join(d,'plugins',s[i]));if(r)return r}try{var g=['ecc','everything-claude-code'];for(var j=0;j<g.length;j++){var c=p.join(d,'plugins','cache',g[j]);var O=f.readdirSync(c);for(var k=0;k<O.length;k++){var q=p.join(c,O[k]);var V=f.readdirSync(q);for(var m=0;m<V.length;m++){r=L(p.join(q,V[m]));if(r)return r}}}}catch(_){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)\" node scripts/hooks/run-with-flags.js pre:powershell:gateguard-fact-force scripts/hooks/gateguard-fact-force.js standard,strict",
-            "timeout": 5
           }
         ]
       },
@@ -110,16 +111,6 @@
           {
             "type": "command",
             "command": "node -e \"const p=require('path');const r=(function(){var p=require('path'),f=require('fs'),o=require('os');var e=Buffer.from('','base64').toString('utf8');if(e&&e.trim())return e.trim();var d=p.join(o.homedir(),'.claude');function L(x){try{return require(p.join(x,'scripts','lib','resolve-ecc-root')).resolveEccRoot()}catch(_){return null}}var r=L(d);if(r)return r;var s=['ecc','ecc@ecc','marketplaces/ecc','everything-claude-code','everything-claude-code@everything-claude-code','marketplaces/everything-claude-code'];for(var i=0;i<s.length;i++){r=L(p.join(d,'plugins',s[i]));if(r)return r}try{var g=['ecc','everything-claude-code'];for(var j=0;j<g.length;j++){var c=p.join(d,'plugins','cache',g[j]);var O=f.readdirSync(c);for(var k=0;k<O.length;k++){var q=p.join(c,O[k]);var V=f.readdirSync(q);for(var m=0;m<V.length;m++){r=L(p.join(q,V[m]));if(r)return r}}}}catch(_){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)\" node scripts/hooks/run-with-flags.js pre:mcp-health-check scripts/hooks/mcp-health-check.js standard,strict"
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node -e \"const p=require('path');const r=(function(){var p=require('path'),f=require('fs'),o=require('os');var e=Buffer.from('','base64').toString('utf8');if(e&&e.trim())return e.trim();var d=p.join(o.homedir(),'.claude');function L(x){try{return require(p.join(x,'scripts','lib','resolve-ecc-root')).resolveEccRoot()}catch(_){return null}}var r=L(d);if(r)return r;var s=['ecc','ecc@ecc','marketplaces/ecc','everything-claude-code','everything-claude-code@everything-claude-code','marketplaces/everything-claude-code'];for(var i=0;i<s.length;i++){r=L(p.join(d,'plugins',s[i]));if(r)return r}try{var g=['ecc','everything-claude-code'];for(var j=0;j<g.length;j++){var c=p.join(d,'plugins','cache',g[j]);var O=f.readdirSync(c);for(var k=0;k<O.length;k++){var q=p.join(c,O[k]);var V=f.readdirSync(q);for(var m=0;m<V.length;m++){r=L(p.join(q,V[m]));if(r)return r}}}}catch(_){}return d})();const s=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.argv.splice(1,0,s);require(s)\" node scripts/hooks/run-with-flags.js pre:edit-write:gateguard-fact-force scripts/hooks/gateguard-fact-force.js standard,strict",
-            "timeout": 5
           }
         ]
       }
@@ -323,33 +314,33 @@
         "source": "github",
         "repo": "DietrichGebert/ponytail"
       },
-      "autoUpdate": true
+      "autoUpdate": false
     },
     "ui-ux-pro-max-skill": {
       "source": {
         "source": "git",
         "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git"
       },
-      "autoUpdate": true
+      "autoUpdate": false
     },
     "humanizer": {
       "source": {
         "source": "git",
         "url": "https://github.com/blader/humanizer.git"
       },
-      "autoUpdate": true
+      "autoUpdate": false
     },
     "agricidaniel-claude-obsidian": {
       "source": {
         "source": "github",
         "repo": "AgriciDaniel/claude-obsidian"
       },
-      "autoUpdate": true
+      "autoUpdate": false
     }
   },
   "effortLevel": "medium",
   "modelSettings": {
-    "claude-fable-5-1": {
+    "claude-fable-5-2": {
       "effortLevel": "high",
       "autoCompactWindow": 250000
     },
@@ -363,11 +354,15 @@
     },
     "claude-haiku-5-5": {
       "effortLevel": "low",
-      "autoCompactWindow": 150000
+      "autoCompactWindow": 100000
     }
   },
   "skipWorkflowUsageWarning": true,
   "theme": "auto",
   "agentPushNotifEnabled": true,
-  "switchModelsOnFlag": true
+  "switchModelsOnFlag": true,
+  "claudeMdExcludes": [
+    "**/.claude/rules/ecc/arkts/**",
+    "**/.claude/rules/ecc/react-native/**"
+  ]
 }

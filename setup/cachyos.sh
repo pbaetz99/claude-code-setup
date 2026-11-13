@@ -2,14 +2,14 @@
 # Komplett-Einrichtung auf CachyOS (Arch) in einem Rutsch:
 #   1. Systempakete (git, node, npm, python) und Claude Code
 #   2. setup/install.sh: ~/.claude wird Checkout dieses Repos, Plugins, Sprachserver
-#   3. setup/local-models/setup-local-models.sh: Qwen + Routing + flag-guard + Flux
+#   3. nur mit MIT_LOKAL=1: setup/local-models/setup-local-models.sh (Qwen + Routing + flag-guard + Flux)
 #   4. setup/obsidian-memory/setup-obsidian-memory.sh: Obsidian-Vault als Gedaechtnis
 #
 # Aufruf auf dem frischen Rechner:
 #   sudo pacman -S --needed git
 #   git clone https://github.com/pbaetz99/claude-code-setup.git /tmp/ccs && bash /tmp/ccs/setup/cachyos.sh
 #
-# Schalter: OHNE_LOKAL=1 (Schritt 3 weglassen), OHNE_OBSIDIAN=1 (Schritt 4 weglassen).
+# Schalter: MIT_LOKAL=1 (Schritt 3 ausfuehren, ~55 GB), OHNE_OBSIDIAN=1 (Schritt 4 weglassen).
 # Wiederholbar: jeder Schritt laesst Vorhandenes stehen.
 set -euo pipefail
 
@@ -34,7 +34,7 @@ sudo pacman -S --needed --noconfirm git nodejs npm python curl
 if have nvidia-smi; then
   nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 else
-  warn "nvidia-smi fehlt: NVIDIA-Treiber pruefen (CachyOS: 'sudo chwd -a'), sonst laufen Qwen/Flux auf der CPU."
+  [ "${MIT_LOKAL:-0}" != 1 ] || warn "nvidia-smi fehlt: NVIDIA-Treiber pruefen (CachyOS: 'sudo chwd -a'), sonst laufen Qwen/Flux auf der CPU."
 fi
 
 # Globale npm-Pakete (Sprachserver, ccr) ohne root nach ~/.local
@@ -67,7 +67,7 @@ bash "$TMP/repo/setup/install.sh" "$REPO"
 
 # Ab hier laufen die Skripte aus dem Checkout in ~/.claude.
 # --- 3. Lokale Modelle ------------------------------------------------------------
-if [ "${OHNE_LOKAL:-0}" != 1 ]; then
+if [ "${MIT_LOKAL:-0}" = 1 ]; then
   say "3/4 Lokale Modelle (Qwen, Routing, flag-guard, Flux) - ~55 GB Downloads"
   bash "$ZIEL/setup/local-models/setup-local-models.sh"
 fi
@@ -83,9 +83,13 @@ say "Fertig. Jetzt:"
 cat <<'EOF'
   1. Neues Terminal oeffnen (PATH und Umgebungsvariablen neu laden).
   2. 'claude' starten und anmelden (Abo).
-  3. Fuer lokales Routing den API-Key ablegen, dann 'claude-lokal' starten:
-       mkdir -p ~/.config/anthropic && install -m 600 /dev/stdin ~/.config/anthropic/api-key
-     (Key einfuegen, Enter, Strg+D)
-  4. Monitor ans Mainboard (Ryzen-iGPU), damit die 16 GB der RTX frei bleiben.
-  Updates kommen danach automatisch: self-update zieht main beim Sitzungsstart (max. 1x/Tag).
+  Updates: self-update holt main beim Sitzungsstart (max. 1x/Tag) und meldet sie im Log;
+  uebernehmen mit: git -C ~/.claude pull --ff-only
 EOF
+if [ "${MIT_LOKAL:-0}" = 1 ]; then
+cat <<'EOF'
+  Lokales Routing: API-Key ablegen, dann 'claude-lokal' starten:
+    mkdir -p ~/.config/anthropic && install -m 600 /dev/stdin ~/.config/anthropic/api-key
+  (Key einfuegen, Enter, Strg+D). Monitor ans Mainboard (Ryzen-iGPU), damit die 16 GB der RTX frei bleiben.
+EOF
+fi

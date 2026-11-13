@@ -7,7 +7,7 @@ argument-hint: "[feature description | path/to/*.prd.md]"
 
 This command creates a comprehensive implementation plan before writing any code. It accepts either free-form requirements or a PRD markdown file.
 
-Run inline by default. Do not call the Task tool or any subagent by default. This keeps `/plan` usable from plugin installs that ship commands without agent files.
+Run inline by default. Do not call the Task tool or any subagent by default. This keeps `/ecc-plan` usable from plugin installs that ship commands without agent files.
 
 ## What This Command Does
 
@@ -18,7 +18,7 @@ Run inline by default. Do not call the Task tool or any subagent by default. Thi
 
 ## When to Use
 
-Use `/plan` when:
+Use `/ecc-plan` when:
 - Starting a new feature
 - Making significant architectural changes
 - Working on complex refactoring
@@ -119,7 +119,7 @@ After writing the artifact, report its path and WAIT for confirmation before wri
 ## Example Usage
 
 ```
-User: /plan I need to add real-time notifications when markets resolve
+User: /ecc-plan I need to add real-time notifications when markets resolve
 
 Assistant:
 # Implementation Plan: Real-Time Market Resolution Notifications

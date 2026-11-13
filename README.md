@@ -5,7 +5,7 @@ Security und IT-Systemadministration. Ziel ist eine Umgebung, in der Claude **si
 (Security-Hooks, Scanner, Review-Agents), **schnell** (Sprachserver statt Datei-Lesen, Browser- und
 Doku-Werkzeuge) und **tokensparend** (Kontext aus LSP, Context7, Memory statt Raten) arbeitet.
 
-Stand: 13.10.2026 · Claude Code 2.1.x · Windows 11, läuft aber auch auf macOS/Linux/WSL.
+Stand: 13.11.2026 · Claude Code 2.1.321 oder neuer · Windows 11, macOS, Linux (CachyOS), WSL.
 
 ## Auf einem neuen Rechner einrichten
 
@@ -31,8 +31,8 @@ Voraussetzungen: Git, Node 18+, npm, Python 3, Claude Code CLI.
 
 ### CachyOS (Arch) in einem Rutsch
 
-Grund-Setup, lokale Modelle (Qwen, Routing, flag-guard, FLUX.1) und Obsidian-Gedächtnis
-mit einem Skript. Es installiert die Pakete und Claude Code selbst und fragt vor dem
+Grund-Setup und Obsidian-Gedächtnis mit einem Skript, auf Wunsch auch lokale Modelle
+(Qwen, Routing, flag-guard, FLUX.1). Es installiert die Pakete und Claude Code selbst und fragt vor dem
 Anlegen des Vaults nach:
 
 ```bash
@@ -40,9 +40,9 @@ sudo pacman -S --needed git
 git clone https://github.com/pbaetz99/claude-code-setup.git /tmp/ccs && bash /tmp/ccs/setup/cachyos.sh
 ```
 
-`OHNE_LOKAL=1` oder `OHNE_OBSIDIAN=1` davorsetzen, um einen Teil wegzulassen. Rund 55 GB
-Downloads (Modelle). Danach neues Terminal, `claude` anmelden, für `claude-lokal` den
-API-Key ablegen (siehe [setup/local-models/README.md](setup/local-models/README.md)).
+`OHNE_OBSIDIAN=1` davorsetzen, um das Gedächtnis wegzulassen. Lokale Modelle kommen nur mit
+`MIT_LOKAL=1` dazu (rund 55 GB Downloads, siehe
+[setup/local-models/README.md](setup/local-models/README.md)). Danach neues Terminal und `claude` anmelden.
 
 ## Was drin ist
 
@@ -64,7 +64,7 @@ beim Stop), semgrep (Guardian, läuft nativ auf Windows), code-review.
 ui-ux-pro-max, playwright, feature-dev, context7 (aktuelle Bibliotheksdoku).
 **Admin / Microsoft:** microsoft-docs.
 **Arbeitsweise:** claude-code-setup, claude-md-management, claude-obsidian (Wissens-Vault;
-Schreiben braucht unter Windows WSL), ponytail (kleinste Lösung, die reicht; Auto-Update).
+Schreiben braucht unter Windows WSL), ponytail (kleinste Lösung, die reicht).
 **Deaktiviert, aber installiert:** code-simplifier.
 
 Am claude.ai-Konto hängen zusätzlich: humanizer, figma, design, engineering,
@@ -74,25 +74,27 @@ Noch nicht installiert, bei Bedarf eine Zeile `claude plugin install <name>@clau
 `azure` (Azure MCP, braucht `az login`), `terraform`, `crowdsec`, `serena` (semantische
 Codesuche, spart Tokens in großen Repos, braucht `uv`), `chrome-devtools-mcp`, `sonarqube`.
 
-## Model-Routing (Stand 13.10.2026)
+## Model-Routing (Stand 13.11.2026)
 
-Ziel: Kosten je erledigter Aufgabe, nicht je Anfrage. Preise je MTok Input/Output: Haiku 5.5 0,10/0,50,
-Sonnet 5.5 2/10, Opus 5.5 4/20, Fable 5.1 10/50.
+Ziel: Kosten je erledigter Aufgabe, nicht je Anfrage. Preise je MTok Input/Output: Haiku 5.5 0,10/0,50
+(Prompts über 100k Tokens: 0,50/2,50), Sonnet 5.5 2/10, Opus 5.5 4/20, Fable 5.2 8/40.
 
 | Ebene | Einstellung | Wo |
 | --- | --- | --- |
-| Hauptsession | Standard `opusplan`: Plan-Modus auf Opus 5.5, Umsetzung auf Sonnet 5.5. Harte Arbeit und alles Sicherheitsrelevante per `/model fable`. Picker bietet Opus, Sonnet, Fable mit Kosten im Text | `settings.json` → `model`, `modelPicker` |
-| Effort | `medium` als Alltag; je Modell gespeichert, Fable auf `high` | `settings.json` → `effortLevel`, `modelSettings` |
-| Kontext | Auto-Compaction bei 250k Tokens statt am 1M-Fenster: jeder Turn liest sonst den ganzen Verlauf neu | `modelSettings.*.autoCompactWindow` |
-| Ausfall | Fällt auf Sonnet zurück, wenn das Hauptmodell überlastet ist | `fallbackModel` |
-| Subagenten | Jeder ECC-Agent trägt `model` und `effort`: 9× Haiku/low (Lesen, Suchen, Doku), 25× Sonnet/medium (Umsetzung, Build-Fixer), 29× Sonnet/high (Reviewer, TDD, Diagnose), 7× Fable/high für harte Arbeit und Sicherheitsrelevantes (planner, architect, spec-miner, security-reviewer, healthcare-reviewer, network-config-reviewer, opensource-sanitizer) | `agents/*.md` |
-| Plugin-Agents ohne Modell | laufen auf Sonnet, erben nie das Hauptmodell | `env.CLAUDE_CODE_SUBAGENT_MODEL` |
+| Hauptsession | Standard `opusplan`: Plan-Modus auf Opus 5.5, Umsetzung auf Sonnet 5.5. Harte Arbeit und alles Sicherheitsrelevante per `/model fable` (Fable 5.2). Der Picker ersetzt die eingebaute Liste und bietet Opus, Sonnet, Fable, Haiku mit Kosten im Text | `settings.json` → `model`, `modelPicker` |
+| Effort | `medium` als Alltag; je Modell gespeichert, Fable auf `high`. Die Schlüssel sind kanonische Modell-IDs (`claude-fable-5-2`): bei jedem neuen Modell umstellen, sonst gelten Effort und Kompaktierungsgrenze stillschweigend nicht mehr | `settings.json` → `effortLevel`, `modelSettings` |
+| Kontext | Auto-Compaction bei 250k Tokens statt am 1M-Fenster: jeder Turn liest sonst den ganzen Verlauf neu. Haiku bei 100k, darüber gilt dort der teurere Tarif | `modelSettings.*.autoCompactWindow` |
+| Ausfall | Bei Überlast oder Serverfehler weiter auf Sonnet, sonst Opus; nicht bei Rate-Limits | `fallbackModel` |
+| Geflaggte Anfragen | Stuft der Sicherheitsklassifikator eine Anfrage als Cyber- oder Biologie-Thema ein, wiederholt Claude Code sie automatisch auf einem älteren Modell. Danach mit `/status` prüfen, welches Modell läuft | `switchModelsOnFlag` |
+| Subagenten | Jeder ECC-Agent trägt `model` und `effort`: 8× Haiku/low (Lesen, Suchen, Doku), 25× Sonnet/medium (Umsetzung, Build-Fixer), 28× Sonnet/high (Reviewer, TDD, Diagnose), 7× Fable/high für harte Arbeit und Sicherheitsrelevantes (planner, architect, spec-miner, security-reviewer, healthcare-reviewer, network-config-reviewer, opensource-sanitizer) | `agents/*.md` |
+| Agents ohne Modell | laufen auf Sonnet statt auf dem Hauptmodell; Frontmatter und ein beim Aufruf übergebenes `model` haben Vorrang | `env.CLAUDE_CODE_SUBAGENT_MODEL` |
 
 Wechsel in der Sitzung: `/model opus`, `/model fable`, `/effort high`. Die Regel dazu, die Claude in jeder
 Sitzung liest: `rules/ecc/common/performance.md`. `modelSettings` und `modelPicker` brauchen Claude Code
-2.1.251 oder neuer; ältere Versionen ignorieren die Schlüssel stillschweigend.
+2.1.251 oder neuer, `fable` zeigt ab 2.1.321 auf Fable 5.2; ältere Versionen ignorieren die Schlüssel stillschweigend.
+Das ECC-Command `/plan` heißt hier `/ecc-plan`: `/plan` bleibt der eingebaute Plan-Modus, an dem `opusplan` hängt.
 
-## Lokale Modelle (optional)
+## Lokale Modelle (optional, standardmäßig nicht installiert)
 
 Qwen-Coder lokal über Ollama mit automatischem Routing (`claude-code-router`): Hintergrund- und
 einfache Tasks laufen lokal, Planung, Review und Security bleiben bei Claude. `/lokal <aufgabe>`
@@ -137,6 +139,23 @@ Zugangsdaten, Patientendaten und interne Hosts kommen laut Regel nie in den Vaul
 eingebaute Auto-Memory von Claude Code bleibt für kurze Arbeitsnotizen bestehen. Unter
 nativem Windows verweigert das Plugin Schreibzugriffe; dort geht es nur über WSL.
 
+## Abgeschaltete ECC-Hooks
+
+`settings.json` schaltet drei ECC-Funktionen ab:
+
+- GateGuard für Routinefälle: Er verweigert sonst den ersten Edit je Datei und den ersten Bash-Aufruf je
+  Sitzung und kostet Extra-Turns, besonders in Subagents. Die beiden GateGuard-Einträge für Edit/Write und
+  PowerShell fehlen im Hook-Block, `GATEGUARD_BASH_ROUTINE_DISABLED=1` nimmt den Routine-Bash-Fall heraus.
+  Die Schranke vor destruktiven Bash-Befehlen (`rm -rf`, Force-Push) bleibt aktiv.
+- `ECC_SKIP_OBSERVE=1`: Der Continuous-Learning-Observer schreibt sonst Ein- und Ausgaben jedes
+  Tool-Aufrufs nach `~/.local/share/ecc-homunculus`, ohne dass sie ausgewertet werden.
+- `ECC_SKIP_LLM_SUMMARY=1`: Sonst starten PreCompact und Sitzungsende verdeckt ein `claude -p` auf Haiku.
+
+Weiter lokal mitgeschrieben werden `bash-commands.log`, `cost-tracker.log`, `metrics/` und `session-data/`
+in `~/.claude`. Die Kostenwerte des cost-tracker sind zu hoch: Er rechnet Haiku mit 1/5, Opus mit 5/25 und Fable
+mit 10/50. Verlässlich ist `/usage`. Die Regeln für HarmonyOS und React Native sind per `claudeMdExcludes` ausgenommen, weil ihre
+Globs auf jede `.ts`-Datei passen.
+
 ## Was bewusst nicht drin ist
 
 `.credentials.json`, `~/.claude.json` (OAuth, Projektstand, ein lokaler MCP-Server mit
@@ -149,15 +168,15 @@ Allowlist, `git add -A` kann davon nichts erfassen.
 | Was | Wie | Abschalten |
 | --- | --- | --- |
 | Claude Code selbst | eigener Schalter `autoUpdates` in `~/.claude.json`, bei dir an | `claude config` bzw. `DISABLE_AUTOUPDATER=1` |
-| Marktplätze und Plugins | `autoUpdate: true` je Marktplatz in `settings.json`; Claude Code prüft beim Start im Hintergrund | Eintrag auf `false` |
-| Diese Konfiguration | `setup/self-update.sh` als asynchroner SessionStart-Hook: holt den Stand, höchstens einmal je 24 Stunden, blockiert nie | `CLAUDE_SETUP_AUTO_UPDATE=0` |
+| Marktplätze und Plugins | Der offizielle Marktplatz aktualisiert sich selbst. Die vier Drittanbieter stehen in `settings.json` auf `autoUpdate: false`, weil Plugins Hooks mitbringen und fremder Code sonst unbeaufsichtigt nachgeladen würde. Aktualisieren mit `claude plugin update <id>` | Eintrag auf `true` |
+| Diese Konfiguration | `setup/self-update.sh` als asynchroner SessionStart-Hook: holt den Stand, höchstens einmal je 24 Stunden, blockiert nie. `settings.json` setzt den Modus `fetch` | `CLAUDE_SETUP_AUTO_UPDATE=0` |
 
 Das Intervall stellst du mit `CLAUDE_SETUP_UPDATE_INTERVAL` (Sekunden) ein.
 
 Das Repo enthält ausführbare Hooks, automatisch gepullter Code läuft also mit. Darum hat
 `self-update.sh` drei Stufen über `CLAUDE_SETUP_UPDATE_MODE`:
 
-- `apply` (Standard): wendet Fast-Forward-Updates ohne Signaturprüfung an. Bequem; das Vertrauen
+- `apply` (Standard des Skripts, in `settings.json` durch `fetch` ersetzt): wendet Fast-Forward-Updates ohne Signaturprüfung an. Bequem; das Vertrauen
   liegt dann allein auf deinem GitHub-Zugang. Wer den Zugang übernimmt, könnte Code auf alle
   Clients ausspielen.
 - `verify`: wendet nur an, wenn der Commit gültig signiert ist (`git merge --verify-signatures`).
